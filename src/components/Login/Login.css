@@ -1,0 +1,51 @@
+
+.loginContainer {
+    margin-top: 50px;
+    border: 1px solid lightgray;
+    border-radius: 15px;
+    padding: 50px;
+
+    background-color: lightblue;
+
+}
+
+.centerContainer {
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+    text-align: center;
+    margin-top:50px;
+}
+
+.centerContainer > h1 {
+    font-size: xx-large;
+    font-weight: 800;
+}
+
+#wrongCredentials {
+    width: 100%;
+    text-align: center;
+    background-color: salmon;
+    border: 1px solid red;
+    padding: 15px;
+    border-radius: 5px;
+    display: none;
+}
+
+@media screen and (max-width: 992px) {
+    .loginContainer {
+        margin-left: auto;
+        margin-right: auto;
+        width: 90%;
+        max-width: 500px;
+    }
+
+} 
+
+@media screen and (min-width: 993px) {
+    .loginContainer {
+        margin-left: auto;
+        margin-right: auto;
+        width: 500px;
+    }
+}
