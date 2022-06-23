@@ -6,11 +6,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useStateIfMounted } from 'use-state-if-mounted'
 import { useNavigate } from 'react-router-dom';
 import { createSubscriptionAsync } from '../../redux/subscriptions/thunks';
+import { getConfigAsync, uploadFileAsync } from '../../redux/azure/thunks';
 
 
 const AddFurniture = () => {
     const { user } = useSelector(state => state.user)
     const { subscription } = useSelector(state => state.subscription)
+    const { config , successfulLoad } = useSelector(state => state.azure)
 
     const dispatch = useDispatch();
 
@@ -29,8 +31,19 @@ const AddFurniture = () => {
     const [xmlDoc, setXmlDoc] = useStateIfMounted("");
 
     useEffect(() => {
+        console.log("hello")
         initConfig();
+        console.log("bye")
     }, [])
+
+    useEffect(() => {
+        if(successfulLoad === true) {
+            console.log(config)
+            console.log(typeof(config))
+            var parser = new DOMParser();
+            setXmlDoc(parser.parseFromString(config, "text/xml"));
+        }
+    }, [successfulLoad])
 
     const {
         files,
@@ -69,7 +82,10 @@ const AddFurniture = () => {
             if (fileNamesAndPrices.length + subscription.occupiedCap > subscription.furnitureCap) {
                 console.log("Not enough space. Please upgrade subscription")
             } else {
-                let output = await containerClient.getBlockBlobClient(file.name).upload(file, file.size)
+                //let output = await containerClient.getBlockBlobClient(file.name).upload(file, file.size)
+                let formData = new FormData()
+                formData.append('body', file)
+                dispatch(uploadFileAsync(formData))
                 let data = {
                     Id: user.id,
                     Type: subscription.type,
@@ -142,7 +158,7 @@ const AddFurniture = () => {
     };
 
     const initConfig = async () => {
-        const blobClient = containerClient.getAppendBlobClient("config.xml");
+        /*const blobClient = containerClient.getAppendBlobClient("config.xml");
         const downloadBlockBlobResponse = await blobClient.download();
         const downloaded = await blobToString(await downloadBlockBlobResponse.blobBody);
         var parser = new DOMParser();
@@ -157,7 +173,8 @@ const AddFurniture = () => {
                 fileReader.onerror = reject;
                 fileReader.readAsText(blob);
             });
-        }
+        }*/
+        dispatch(getConfigAsync());
     }
 
     const addFile = (e) => {
@@ -280,7 +297,7 @@ const AddFurniture = () => {
                     <Grid templateColumns={{ base: "100%", md: "50% 50%" }}>
                         <GridItem textAlign="center" width="100%" pb={20} pt={20} backgroundColor="whiteAlpha.600" borderRadius="5px" mr={2}>
                             <Button colorScheme="blue" onClick={() => inputRef.current.click()}>Select files</Button>
-                            <input ref={inputRef} type="file" multiple style={{ display: 'none' }} onChange={(e) => addFile(e)} />
+                            <input ref={inputRef} type="file" multiple style={{ display: 'none' }} onChange={(e) => addFile(e)}/>
                         </GridItem>
 
                         <GridItem width="100%" backgroundColor="whitesmoke" borderRadius="5px" ml={2} position="relative" color="white">

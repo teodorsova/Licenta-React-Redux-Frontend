@@ -5,6 +5,7 @@ import thunk from "redux-thunk"
 import userReducer from "../reducers/userReducer";
 import subscriptionReducer from "../reducers/subscriptionReducer";
 import orderReducer from "../reducers/orderReducer";
+import azureReducer from "../reducers/azureReducer";
 
 const persistConfig = {
     key: 'state',
@@ -14,7 +15,8 @@ const persistConfig = {
 const combinedReducer = combineReducers({
     user: userReducer,
     subscription: subscriptionReducer,
-    orders: orderReducer
+    orders: orderReducer,
+    azure: azureReducer
 })
 
 const rootReducer = (state, action) => {
