@@ -1,70 +1,55 @@
-# Getting Started with Create React App
+# Virtual Assistant for Interior Design
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repository contains the frontent website for my bachelor thesis. There are three repositiories in total, the other two containing the Web API and the Unity App.
 
-## Available Scripts
+# Introduction
 
-In the project directory, you can run:
+What if smaller companies or workshops that procude furniture could have the possibility to upload their products on a platform that allows cutomers to view them in 3D?
+This applications aims to do that in a simple, but efficient manner.
 
-### `npm start`
+# Architecture
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+For the frontend part React.js was used. It also incorporates a Redux store for global state management. The frontend is also responsible for communication with the Web API and Unity (using a Unity Context). 
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The Web API communicates with the relational database (PostgreSQL), which is used for managing accounts, subscriptions and orders, while the NoSQL (Firestore) is used to store data related to furniture pieces.
 
-### `npm test`
+Azure Blob Storage hosts the furniture files, that are downloaded on-the-go when the Unity app is started.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<img width="770" alt="Drawing1" src="https://user-images.githubusercontent.com/70344140/178999028-44d388f3-4071-4efd-9411-543b5e43c24c.png">
 
-### `npm run build`
+# Usage
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Both companies and users can visualise their profiles, each having different roles. Companies can manage order requests, purchase subscriptions and then upload more furniture models to the cloud, that will be used inside the Unity app, while users can use the furniture pieces to place orders.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# User perspective
 
-### `npm run eject`
+### Users can access the Unity app within the React webpage and create a virtual room.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+![image](https://user-images.githubusercontent.com/70344140/178997272-2dbfa298-12dd-4e33-a2fc-d9d3bf73ac8b.png)
+![image](https://user-images.githubusercontent.com/70344140/178997327-3c2f089b-266a-4226-adfe-3ed84f0f1960.png)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### The user has the possibility to place an order based on the visual content of the Unity app.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+![image](https://user-images.githubusercontent.com/70344140/178997706-a913acee-0dd1-4c07-8706-bc1412c0cf71.png)
+![image](https://user-images.githubusercontent.com/70344140/178997804-da0a56c9-170c-48aa-aaef-3122e4d08f5f.png)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Once an order is placed, every company that is included in the order will have the possiblity to accept or refuse it.
 
-## Learn More
+# Company perspective
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Company profile page:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+![image](https://user-images.githubusercontent.com/70344140/178995127-a96f099e-d12c-4746-ac34-237d387db060.png)
 
-### Code Splitting
+### Adding furniture:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+![image](https://user-images.githubusercontent.com/70344140/178998165-48964bb9-dcb4-46a0-9592-c0b141a74cdf.png)
 
-### Analyzing the Bundle Size
+### Managing orders:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+![image](https://user-images.githubusercontent.com/70344140/178998351-e4399320-b39b-425e-a8e2-4fc8a82b5084.png)
 
-### Making a Progressive Web App
+When companies change the status of the orders, the users will be able to see it in real time.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

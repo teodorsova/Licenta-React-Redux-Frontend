@@ -110,6 +110,50 @@ const orderReducer = (state = initialStates, { type, payload }) => {
                 errorMessage: payload
             }
 
+        case actionTypes.FURNITURES_FOR_COMPANY_LOAD_START:
+            return {
+                ...state,
+                successfulFurnitureForCompaniesCreation: false
+            }
+
+        case actionTypes.FURNITURES_FOR_COMPANY_LOAD_SUCCESS:
+            return {
+                ...state,
+                successfulFurnitureForCompaniesCreation: true,
+                ordersForCompanies: payload
+            }
+
+        case actionTypes.FURNITURES_FOR_COMPANY_LOAD_ERROR:
+            return {
+                ...state,
+                successfulFurnitureForCompaniesCreation: false,
+                errorMessage: payload
+            }
+
+        case actionTypes.FURNITURE_UPDATE_STATUS_START:
+            return {
+                ...state,
+                successfulFurnitureStatusUpdate: false
+            }
+
+        case actionTypes.FURNITURE_UPDATE_STATUS_SUCCESS:
+            return {
+                ...state,
+                successfulFurnitureStatusUpdate: true,
+            }
+
+        case actionTypes.FURNITURE_UPDATE_STATUS_ERROR:
+            return {
+                ...state,
+                successfulFurnitureStatusUpdate: false,
+                errorMessage: payload
+            }
+
+        case actionTypes.RESET_INITIAL_STATUS:
+            return {
+                ...initialStates
+            }
+
 
         default: return state
     }

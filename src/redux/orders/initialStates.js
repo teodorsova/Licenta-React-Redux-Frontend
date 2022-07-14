@@ -9,5 +9,8 @@ export default {
     successfulFurnitureOrderCreation: false,
     successfulOrdersLoad: false,
     furnituresSuccessfulLoad: false,
-    furnitures: []
+    furnitures: [],
+    ordersForCompanies: [],
+    successfulFurnitureForCompaniesCreation: false,
+    successfulFurnitureStatusUpdate: false
 }

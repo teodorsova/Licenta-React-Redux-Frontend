@@ -3,4 +3,5 @@ export default {
     config: "",
     errorMessage: undefined,
     successfulLoad: false,
+    successfulUpload: false
 }

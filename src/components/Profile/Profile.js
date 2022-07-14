@@ -61,7 +61,11 @@ function Profile() {
                         <Flex direction='column' pl={{ base: '10%', md: '25%' }} pr={{ base: '10%', md: '25%' }}>
                             <Button mb={2}><Text color="black" fontWeight="bold">Change profile picture</Text></Button>
                             <Link href="/orders"><Button mb={2} colorScheme="blackAlpha" width="100%"><Text fontWeight="bold">Order history</Text></Button></Link>
-                            {companyName === "" ? <></> : <Link href="/subscription"><Button colorScheme="green" width="100%"><Text fontWeight="bold">View subscription</Text></Button></Link>}
+                            {companyName === "" ? <></> : 
+                            <>
+                                <Link href="/subscription"><Button colorScheme="green" width="100%" mb={2}><Text fontWeight="bold">View subscription</Text></Button></Link>
+                                <Link href="/requests"><Button colorScheme="blue" width="100%"><Text fontWeight="bold">View order requests</Text></Button></Link>
+                            </>}
                         </Flex>
                     </Stack>
                 </GridItem>
@@ -99,7 +103,7 @@ function Profile() {
                                                 <InputGroup>
                                                     <Stack w="100%">
                                                         <Text color="black">First Name:</Text>
-                                                        <Input type="text" placeholder="Enter first name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                                                        <Input type="text" id="first-name" placeholder="Enter first name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                                                     </Stack>
                                                 </InputGroup>
                                             </FormControl>
@@ -107,7 +111,7 @@ function Profile() {
                                                 <InputGroup>
                                                     <Stack w="100%">
                                                         <Text color="black">Last Name:</Text>
-                                                        <Input type="text" placeholder="Enter last name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                                                        <Input type="text" id="last-name" placeholder="Enter last name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                                                     </Stack>
                                                 </InputGroup>
                                             </FormControl>
@@ -115,7 +119,7 @@ function Profile() {
                                                 <InputGroup>
                                                     <Stack w="100%">
                                                         <Text color="black">Email:</Text>
-                                                        <Input type="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                                        <Input type="email" id="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} />
                                                     </Stack>
                                                 </InputGroup>
                                             </FormControl>
@@ -125,7 +129,7 @@ function Profile() {
                                                         <FormLabel>
                                                             <Text color="black">Phone number:</Text>
                                                         </FormLabel>
-                                                        <Input type="text" placeholder="Enter phone number" value={phoneNo} onChange={(e) => setPhoneNo(e.target.value)} />
+                                                        <Input type="text" id="phone-no"placeholder="Enter phone number" value={phoneNo} onChange={(e) => setPhoneNo(e.target.value)} />
                                                     </Stack>
                                                 </InputGroup>
                                             </FormControl>
@@ -133,7 +137,7 @@ function Profile() {
                                                 <InputGroup>
                                                     <Stack w="100%">
                                                         <Text color="black">Enter password to confirm changes:</Text>
-                                                        <Input type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                                        <Input type="password" id="password" autoComplete="none" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} />
                                                     </Stack>
                                                 </InputGroup>
                                             </FormControl>

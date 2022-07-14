@@ -48,8 +48,14 @@ const Register2 = () => {
         }
     }, [registerSuccessful, navigate])
 
+    function sleep(ms) {
+        return new Promise((resolve) => {
+          setTimeout(resolve, ms);
+        });
+      }
 
-    function handleRegister() {
+
+    const handleRegister = async () => {
         setDisplay('none')
         if (password !== repeatPassword) {
             setDisplayMessage("Passwords don't match!")
@@ -69,6 +75,10 @@ const Register2 = () => {
             });
             dispatch(registerUserAsync(data))
         }
+
+        await sleep(2000);
+        setDisplay('none')
+
     }
 
     useEffect(() => {

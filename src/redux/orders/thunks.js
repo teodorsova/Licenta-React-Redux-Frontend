@@ -5,7 +5,9 @@ export const createOrderAsync = data => (dispatch) => {
     dispatch(Actions.orderCreateStart());
 
     OrdersService.createOrder(data)
-        .then((response) => dispatch(Actions.orderCreateSuccess(response.data)))
+        .then((response) => {
+            dispatch(Actions.orderCreateSuccess(response.data))
+        })
         .catch((error) => dispatch(Actions.orderCreateError(error)))
 }
 
@@ -43,3 +45,20 @@ export const stopOrderLoad = () => dispatch => {
     dispatch(Actions.ordersLoadStop())
 }
 
+export const getFurnituresForCompanyAsync = userId => (dispatch) => {
+    dispatch(Actions.furnituresForCompanyLoadStart());
+    OrdersService.getFurnituresForCompanyAccount(userId)
+        .then((response) => dispatch(Actions.furnituresForCompanyLoadSuccess(response.data)))
+        .catch((error) => dispatch(Actions.furnituresForCompanyLoadError(error)))
+}
+
+export const updateFurnitureStatusAsync = (id, status) => (dispatch) => {
+    dispatch(Actions.furnitureUpdateStatusStart())
+    OrdersService.updateFurnitureStatus(id, status)
+        .then((response) => dispatch(Actions.furnitureUpdateStatusSuccess(response.data)))
+        .catch((error) => dispatch(Actions.furnitureUpdateStatusError(error)));
+}
+
+export const resetOrderState = () => (dispatch) => {
+    dispatch(Actions.resetInitialStatus())
+}

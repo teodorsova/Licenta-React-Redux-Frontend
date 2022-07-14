@@ -6,6 +6,7 @@ import userReducer from "../reducers/userReducer";
 import subscriptionReducer from "../reducers/subscriptionReducer";
 import orderReducer from "../reducers/orderReducer";
 import azureReducer from "../reducers/azureReducer";
+import firestoreReducer from "../reducers/firestoreReducer";
 
 const persistConfig = {
     key: 'state',
@@ -16,7 +17,8 @@ const combinedReducer = combineReducers({
     user: userReducer,
     subscription: subscriptionReducer,
     orders: orderReducer,
-    azure: azureReducer
+    azure: azureReducer,
+    firestore: firestoreReducer
 })
 
 const rootReducer = (state, action) => {

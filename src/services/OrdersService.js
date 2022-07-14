@@ -36,6 +36,20 @@ class OrdersService {
         },
         withCredentials: true
     })
+
+    getFurnituresForCompanyAccount = (userId) => apiClient().get('http://localhost:5220/order/furnitures/account?userId=' + userId, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        withCredentials: true
+    })
+
+    updateFurnitureStatus = (id, status) => apiClient().post('http://localhost:5220/order/furnitures/update/status?id=' + id +"&status=" + status, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        withCredentials: true
+    })
     
 }
 

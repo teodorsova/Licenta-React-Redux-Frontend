@@ -3,37 +3,31 @@ import Unity, { UnityContext } from "react-unity-webgl";
 import { Text, Container, Flex, Table, Thead, Tbody, TableContainer, Button, Tr, Th, Td, Box, Stack, Link } from '@chakra-ui/react'
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/users/thunks";
+import { useStateIfMounted } from "use-state-if-mounted";
 
 
 
 function Modeler(props) {
-    const [furnitures, setFurnitures] = useState({count: 0, arr: []})
+    const [furnitures, setFurnitures] = useStateIfMounted({count: 0, arr: []})
+    const [unityContext, setUnityContext] = useStateIfMounted(props.unityContext)
     var totalPrice = 0.0;
 
-    props.unityContext.on("FurnitureSpawn", function (name, price, companyName) {
-        console.log(name + price + companyName)
+    unityContext.on("FurnitureSpawn", function (name, price, companyName) {
         var jsonData = { Name: name, Price: price, CompanyName: companyName }   
         setFurnitures({count: furnitures.count+1, arr: [...furnitures.arr, jsonData]})     
     })
 
     useEffect(() => {
-        props.unityContext.quitUnityInstance()
         let tempFurnitureArray = []
         Object.keys(localStorage).forEach((element) => {
             
             if (!isNaN(parseInt(element))) {
                 tempFurnitureArray.push(JSON.parse(localStorage.getItem(element)))
-
-            console.log(tempFurnitureArray)
             }
             
         })
         setFurnitures({count: tempFurnitureArray.length, arr: tempFurnitureArray})
-    }, [])
-
-   
-
-    
+    }, [setFurnitures])
 
     function handleOnClickFullscreen() {
         props.unityContext.setFullscreen(true);
@@ -43,7 +37,6 @@ function Modeler(props) {
         props.unityContext.send("Container", "DeleteFurniture", name);
         let index = furnitures.arr.indexOf(furnitures.arr.find((furniture) => furniture['Name'] === name));
         localStorage.removeItem(i)
-        console.log(i)
         localStorage.removeItem(furnitures.count - 1)
         setFurnitures({count: furnitures.count-1, arr: [...furnitures.arr.slice(0, index), ...furnitures.arr.slice(index + 1)]})
     }
@@ -61,7 +54,7 @@ function Modeler(props) {
                             Select each furniture piece one by one and press <b>Q</b> or <b>E</b> to rotate them!
                         </Text>
                     </Box>
-                    <Unity unityContext={props.unityContext} devicePixelRatio={2} style={{
+                    <Unity unityContext={unityContext} devicePixelRatio={2} style={{
                         aspectRatio: "16/10",
                         width: "100%",
                         border: "2px solid black",
@@ -83,8 +76,6 @@ function Modeler(props) {
                                 {furnitures.arr.map((piece, index) => {
                                     totalPrice += parseFloat(piece["Price"])
                                     localStorage.setItem(index, JSON.stringify(piece))
-                                    console.log(piece)
-                                    console.log(furnitures.arr)
                                     return (
                                         <Tr key={index}>
                                             <Td>

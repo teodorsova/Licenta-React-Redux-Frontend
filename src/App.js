@@ -21,6 +21,7 @@ import woodImage from './res/img/wood2.png'
 import CheckOut from './components/CheckOut/CheckOut';
 import Unity, { UnityContext } from "react-unity-webgl";
 import OrdersDashboard from './components/Orders/OrdersDashboard';
+import OrderControlPanel from './components/Orders/OrderControlPanel';
 
 function App() {
 
@@ -29,7 +30,7 @@ function App() {
     dataUrl: "UnityWebApp.data",
     frameworkUrl: "UnityWebApp.framework.js",
     codeUrl: "UnityWebApp.wasm",
-});
+  });
 
 
   const { user, isLoggingOut } = useSelector((state) => state.user)
@@ -57,8 +58,6 @@ function App() {
     return user.companyName === undefined || user.companyName === "" ? <Navigate to='/' /> : children;
   }
 
-  
-  
   return (
     <>
       <Parallax strength={800}>
@@ -69,15 +68,14 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
-            <Route path="/modeler" element={<PrivateRoute>
-              <Modeler unityContext ={unityContext}
-
-              
-              />
-            </PrivateRoute>} />
-            <Route path="/profile" element={<PrivateRoute>
-              <Profile />
-            </PrivateRoute>} />
+            <Route path="/modeler" element={
+              <PrivateRoute>
+                <Modeler unityContext={unityContext} />
+              </PrivateRoute>} />
+            <Route path="/profile" element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>} />
             <Route path="/addFurniture" element={
               <PrivateRoute>
                 <PrivateCompanyRoute>
@@ -87,10 +85,10 @@ function App() {
             } />
             <Route path="/basket" element={
               <PrivateRoute>
-                  <CheckOut />
+                <CheckOut />
               </PrivateRoute>
             } />
-             <Route path="/subscription" element={
+            <Route path="/subscription" element={
               <PrivateRoute>
                 <PrivateCompanyRoute>
                   <SubscriptionPage />
@@ -99,13 +97,20 @@ function App() {
             } />
             <Route path="/orders" element={
               <PrivateRoute>
-                  <OrdersDashboard />
+                <OrdersDashboard />
               </PrivateRoute>
             } />
-             <Route path="/payment" element={
+            <Route path="/payment" element={
               <PrivateRoute>
                 <PrivateCompanyRoute>
                   <ProcessingPaymentPage />
+                </PrivateCompanyRoute>
+              </PrivateRoute>
+            } />
+            <Route path="/requests" element={
+              <PrivateRoute>
+                <PrivateCompanyRoute>
+                  <OrderControlPanel />
                 </PrivateCompanyRoute>
               </PrivateRoute>
             } />

@@ -7,6 +7,7 @@ import { CgProfile } from 'react-icons/cg'
 import { FaUnity} from 'react-icons/fa'
 import { AiOutlineHome, AiOutlineUser, AiOutlineUserAdd } from 'react-icons/ai'
 import { ImExit } from 'react-icons/im'
+import { VscBell, VscBellDot} from 'react-icons/vsc'
 
 const MenuItems = ({ isOpen = true, fullName = "" }) => {
     const { user } = useSelector(state => state.user)
@@ -15,7 +16,13 @@ const MenuItems = ({ isOpen = true, fullName = "" }) => {
             <MenuItem h="32px" to="/modeler"><Icon h="28px" w="28px"><FaUnity size="1rem" /></Icon>3DModeler</MenuItem>
             <MenuItem h="32px" to="/profile"><Icon h="28px" w="28px"><CgProfile size="1rem" /></Icon>Welcome, {fullName}!</MenuItem>
             <MenuItem h="32px" to="/basket"><Icon h="28px" w="28px"><BsBasket size="1rem" /></Icon>Your basket</MenuItem>
+            {user!== undefined ? 
+                (user.companyName!== "" ? 
+                    <MenuItem h="32px" to="/requests"><Icon h="28px" w="28px"><VscBell size="1rem" /></Icon>Notfications</MenuItem> 
+                    : <></>) 
+                : <></>}
             <MenuItem h="32px" to="logout"><Icon h="28px" w="28px"><ImExit size="1rem" /></Icon>Log out</MenuItem>
+            
     </>)
 
     var loggedOutNavLinks = (<>

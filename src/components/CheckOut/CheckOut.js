@@ -3,18 +3,24 @@ import React, { useEffect, useState } from 'react'
 import { Visa, Mastercard, Maestro } from 'react-pay-icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { BsTrash } from 'react-icons/bs'
-import { createFurnitureAsync, createFurnitureOrderAsync, createOrderAsync } from '../../redux/orders/thunks'
+import { createFurnitureAsync, createFurnitureOrderAsync, createOrderAsync, resetOrderState } from '../../redux/orders/thunks'
+import { Navigate, useNavigate } from 'react-router-dom'
 
 const CheckOut = () => {
     const { user } = useSelector(state => state.user)
-    const { order, successfulCreation, successfulFurnitureCreation, furniture } = useSelector(state => state.orders)
+    const { order, successfulCreation, successfulFurnitureCreation, successfulFurnitureOrderCreation, furniture } = useSelector(state => state.orders)
     const [checkOutElements, setCheckOutElements] = useState([])
-    const [cardNumber, setCardNumber] = useState()
-    const [cvc, setCvc] = useState()
+    const [cardNumber, setCardNumber] = useState("")
+    const [cvc, setCvc] = useState("")
     const [expDate, setExpDate] = useState("")
     const [cardHolderName, setCardHolderName] = useState("")
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [addressLine1, setAddressLine1] = useState("")
+    const [addressLine2, setAddressLine2] = useState("")
     const [display, setDisplay] = useState("none")
-    const [createdOrder, setCreatedOrder] = useState({})
+    const [furnitureCounter, setFurnitureCounter] = useState(0)
+    const navigate = useNavigate()
 
     const dispatch = useDispatch();
     var price = 0.0;
@@ -25,22 +31,19 @@ const CheckOut = () => {
                 setCheckOutElements(checkOutElements => [...checkOutElements, JSON.parse(localStorage.getItem(element))])
             }
         })
-        console.log(checkOutElements)
     }, [])
-
+    
     useEffect(() => {
         if (successfulCreation) {
             checkOutElements.forEach((element) => {
-                console.log(element)
 
                 const appendItem = (() => new Promise((resolve, reject) => {
-                    
+
                     dispatch(createFurnitureAsync({
                         CompanyName: element.CompanyName,
                         Price: element.Price,
                         Name: element.Name,
                     }));
-                    console.log("call")
                     resolve();
                 }))
                 appendItem()
@@ -51,14 +54,26 @@ const CheckOut = () => {
     useEffect(() => {
         if (successfulFurnitureCreation) {
             console.log(furniture)
+            if(order)
             if (order.id !== undefined) {
                 dispatch(createFurnitureOrderAsync({
                     OrderModelId: order.id,
-                    FurnitureModelId: furniture.id
+                    FurnitureModelId: furniture.id,
+                    OrderingUserId: user.id
                 }))
+                setFurnitureCounter(furnitureCounter + 1);
             }
         }
     }, [successfulFurnitureCreation, furniture])
+
+    useEffect(() => {
+        if(furnitureCounter === checkOutElements.length && furnitureCounter !== 0) {
+            clearBasket()
+            dispatch(resetOrderState())
+            navigate('/orders')
+        }
+    }, [furnitureCounter])
+
 
     const clearBasket = () => {
         Object.keys(localStorage).forEach((element) => {
@@ -73,8 +88,8 @@ const CheckOut = () => {
         if (cardNumber === undefined || cvc === undefined || expDate === "" || cardHolderName === "") {
             setDisplay('block')
         } else {
-            dispatch(createOrderAsync({ UserId: user.id }))
-
+            dispatch(createOrderAsync({ UserId: user.id, AddressLine1: addressLine1, AddressLine2: addressLine2  }))
+           
         }
     }
 
@@ -128,24 +143,24 @@ const CheckOut = () => {
                                     <InputGroup>
                                         <Stack width="50%">
                                             <Text color="blackAlpha.900">First name:</Text>
-                                            <Input boxShadow="10px" placeholder="John Smith" type="text" value={user.firstName} onChange={(e) => { setCardHolderName(e.target.value) }} />
+                                            <Input boxShadow="10px" placeholder="John Smith" type="text" value={user.firstName} onChange={(e) => { setFirstName(e.target.value) }} />
                                         </Stack>
                                         <Stack width="50%">
                                             <Text color="blackAlpha.900">Last name:</Text>
-                                            <Input boxShadow="10px" placeholder="John Smith" type="text" value={user.lastName} onChange={(e) => { setCardHolderName(e.target.value) }} />
+                                            <Input boxShadow="10px" placeholder="John Smith" type="text" value={user.lastName} onChange={(e) => { setLastName(e.target.value) }} />
                                         </Stack>
                                     </InputGroup>
                                 </FormControl>
                                 <FormControl>
                                     <Text color="blackAlpha.900">Address line 1:</Text>
                                     <InputGroup>
-                                        <Input boxShadow="10px" placeholder="Street, number etc." type="text" value={expDate} onChange={(e) => { setExpDate(e.target.value) }} />
+                                        <Input boxShadow="10px" placeholder="Street, number etc." type="text" value={addressLine1} onChange={(e) => { setAddressLine1(e.target.value) }} />
                                     </InputGroup>
                                 </FormControl>
                                 <FormControl>
                                     <Text color="blackAlpha.900">Address line 2:</Text>
                                     <InputGroup>
-                                        <Input boxShadow="10px" placeholder="Unit, floor, ap. etc." type="text" value={cvc} onChange={(e) => { setCvc(e.target.value) }} />
+                                        <Input boxShadow="10px" placeholder="Unit, floor, ap. etc." type="text" value={addressLine2} onChange={(e) => { setAddressLine2(e.target.value) }} />
                                     </InputGroup>
                                 </FormControl>
                             </Box>

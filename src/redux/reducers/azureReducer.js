@@ -25,6 +25,24 @@ const azureReducer = (state = initialStates, { type, payload }) => {
                 errorMessage: payload
             }
 
+        case actionTypes.FILE_UPLOAD_START:
+            return {
+                ...state,
+                successfulUpload: false
+            }
+        case actionTypes.FILE_UPLOAD_SUCCESS:
+            return {
+                ...state,
+                successfulUpload: true
+            }
+
+        case actionTypes.FILE_UPLOAD_ERROR:
+            return {
+                ...state,
+                successfulUpload: false,
+                errorMessage: payload
+            }
+
         default: return state
     }
 

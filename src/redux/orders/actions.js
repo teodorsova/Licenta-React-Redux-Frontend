@@ -74,6 +74,38 @@ const ordersLoadStop = () => ({
     type: ordersActionTypes.ORDERS_LOAD_STOP
 })
 
+const furnituresForCompanyLoadStart = () => ({
+    type: ordersActionTypes.FURNITURES_FOR_COMPANY_LOAD_START
+})
+
+const furnituresForCompanyLoadSuccess = (data) => ({
+    type: ordersActionTypes.FURNITURES_FOR_COMPANY_LOAD_SUCCESS,
+    payload: data
+})
+
+const furnituresForCompanyLoadError = (error) => ({
+    type: ordersActionTypes.FURNITURES_FOR_COMPANY_LOAD_ERROR,
+    payload: error
+})
+
+const furnitureUpdateStatusStart = () => ({
+    type: ordersActionTypes.FURNITURE_UPDATE_STATUS_START
+})
+
+const furnitureUpdateStatusSuccess = (data) => ({
+    type: ordersActionTypes.FURNITURE_UPDATE_STATUS_SUCCESS,
+    payload: data
+})
+
+const furnitureUpdateStatusError = (error) => ({
+    type: ordersActionTypes.FURNITURE_UPDATE_STATUS_ERROR,
+    payload: error
+})
+
+const resetInitialStatus = () => ({
+    type: ordersActionTypes.RESET_INITIAL_STATUS
+})
+
 
 export default {
     orderCreateStart,
@@ -92,5 +124,12 @@ export default {
     ordersLoadError,
     furnituresLoadStart,
     furnituresLoadSuccess,
-    furnituresLoadError
+    furnituresLoadError,
+    furnituresForCompanyLoadStart,
+    furnituresForCompanyLoadSuccess,
+    furnituresForCompanyLoadError,
+    furnitureUpdateStatusStart,
+    furnitureUpdateStatusSuccess,
+    furnitureUpdateStatusError,
+    resetInitialStatus
 }

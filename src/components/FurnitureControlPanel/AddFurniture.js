@@ -7,43 +7,33 @@ import { useStateIfMounted } from 'use-state-if-mounted'
 import { useNavigate } from 'react-router-dom';
 import { createSubscriptionAsync } from '../../redux/subscriptions/thunks';
 import { getConfigAsync, uploadFileAsync } from '../../redux/azure/thunks';
+import { insertFirestoreAsync } from '../../redux/firestore/thunks';
 
 
 const AddFurniture = () => {
     const { user } = useSelector(state => state.user)
     const { subscription } = useSelector(state => state.subscription)
-    const { config , successfulLoad } = useSelector(state => state.azure)
+    const { successfulUpload } = useSelector(state => state.azure)
+    const { successfulInsert } = useSelector(state => state.firestore)
+    const [displayUploadProgress, setDisplayUploadProgress] = useState("none")
+    const [hasFinishedUploading, setHasFinishedUploading] = useState(false)
+    const [hasFinishedQueryingNoSQL, setHasFinishedQueryingNoSQL] = useState(false)
 
     const dispatch = useDispatch();
 
     const [content, setContent] = useState([])
 
-    const AzureStorageBlob = require("@azure/storage-blob");
-
-    const blobServiceClient = new AzureStorageBlob.BlobServiceClient(
-        process.env.REACT_APP_AZURE_SAS_GENERATOR_URI
-    );
-
-    const containerClient = blobServiceClient.getContainerClient('containerlicenta')
 
     const [fileNamesAndPrices, setFileNamesAndPrices] = useState([])
 
-    const [xmlDoc, setXmlDoc] = useStateIfMounted("");
 
     useEffect(() => {
-        console.log("hello")
-        initConfig();
-        console.log("bye")
-    }, [])
+        setHasFinishedUploading(successfulUpload)
+    }, [successfulUpload])
 
     useEffect(() => {
-        if(successfulLoad === true) {
-            console.log(config)
-            console.log(typeof(config))
-            var parser = new DOMParser();
-            setXmlDoc(parser.parseFromString(config, "text/xml"));
-        }
-    }, [successfulLoad])
+        setHasFinishedQueryingNoSQL(successfulInsert)
+    }, [successfulInsert])
 
     const {
         files,
@@ -77,15 +67,13 @@ const AddFurniture = () => {
 
     var inputRef = useRef();
 
-    async function upload(file) {
+    async function upload() {
         try {
             if (fileNamesAndPrices.length + subscription.occupiedCap > subscription.furnitureCap) {
                 console.log("Not enough space. Please upgrade subscription")
             } else {
-                //let output = await containerClient.getBlockBlobClient(file.name).upload(file, file.size)
-                let formData = new FormData()
-                formData.append('body', file)
-                dispatch(uploadFileAsync(formData))
+                setDisplayUploadProgress('block')
+                dispatch(uploadFileAsync(files))
                 let data = {
                     Id: user.id,
                     Type: subscription.type,
@@ -106,74 +94,56 @@ const AddFurniture = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let trimmedCompanyName = user.companyName.replace(/ /g, "");
-        let companyTag = xmlDoc.getElementsByTagName(trimmedCompanyName)
-        if (companyTag.length === 0) {
-            let companies = xmlDoc.getElementsByTagName("companies")
-            let company = xmlDoc.createElement(trimmedCompanyName)
-            companies[0].appendChild(company)
-        }
-        let company = xmlDoc.getElementsByTagName(trimmedCompanyName);
-        let furnitureFile = files.find((file) => (file.name.split('.').pop() === 'unity3d'));
-        let fileName = furnitureFile.name;
-        let fileNameTag = xmlDoc.createElement(fileName);
-        company[0].appendChild(fileNameTag)
+        console.log(files)
+        console.log(fileNamesAndPrices)
 
-        fileNamesAndPrices.forEach((pair, index) => {
+        var furniturePiecesData = []
 
-            let furnitureTag = xmlDoc.createElement("furniture")
-            fileNameTag.appendChild(furnitureTag)
-
-            let furnitureNameText = xmlDoc.createTextNode(pair.Name);
-            let furniturePriceText = xmlDoc.createTextNode(pair.Price);
-            let furnitureRoomText = xmlDoc.createTextNode(pair.Room);
-            let furnitureCompanyText = xmlDoc.createTextNode(trimmedCompanyName)
-
-            let furnitureNameTag = xmlDoc.createElement("name");
-            let furniturePriceTag = xmlDoc.createElement("price")
-            let furnitureRoomTag = xmlDoc.createElement("room")
-            let furnitureCompanyTag = xmlDoc.createElement("company")
-
-            furnitureNameTag.appendChild(furnitureNameText)
-            furniturePriceTag.appendChild(furniturePriceText)
-            furnitureRoomTag.appendChild(furnitureRoomText);
-            furnitureCompanyTag.appendChild(furnitureCompanyText)
-
-            let furnitureTagArray = xmlDoc.getElementsByTagName("furniture")
-
-            furnitureTagArray[furnitureTagArray.length - 1].appendChild(furnitureNameTag);
-            furnitureTagArray[furnitureTagArray.length - 1].appendChild(furniturePriceTag);
-            furnitureTagArray[furnitureTagArray.length - 1].appendChild(furnitureRoomTag);
-            furnitureTagArray[furnitureTagArray.length - 1].appendChild(furnitureCompanyTag);
-        })
-
-        console.log(xmlDoc)
-        var blob = new Blob([new XMLSerializer().serializeToString(xmlDoc)], { type: "text/xml" })
-        var file = new File([blob], "config.xml");
-        files.push(file);
-
-        files.forEach(file => {
-            upload(file)
+        fileNamesAndPrices.forEach(element => {
+            furniturePiecesData.push({
+                "Name": element.Name,
+                "CompanyName": user.companyName,
+                "Price": element.Price,
+                "Room": element.Room
+            })
         });
+        var fileArray = []
+
+        if (files[0].name.split('.').pop() === 'unity3d') {
+
+            fileArray.push({
+                "FileName": files[0].name,
+                "FurniturePieces": furniturePiecesData
+            })
+
+            fileArray.push({
+                "FileName": files[1].name,
+                "furniturePieces": []
+            })
+        } else {
+            fileArray.push({
+                "FileName": files[1].name,
+                "FurniturePieces": furniturePiecesData
+            })
+
+            fileArray.push({
+                "FileName": files[0].name,
+                "furniturePieces": []
+            })
+        }
+
+        var firestoreData = {
+            "CompanyName": user.companyName,
+            "Files": fileArray,
+        }
+
+        console.log(JSON.stringify(firestoreData))
+
+        dispatch(insertFirestoreAsync(firestoreData))
+        upload()
     };
 
     const initConfig = async () => {
-        /*const blobClient = containerClient.getAppendBlobClient("config.xml");
-        const downloadBlockBlobResponse = await blobClient.download();
-        const downloaded = await blobToString(await downloadBlockBlobResponse.blobBody);
-        var parser = new DOMParser();
-        setXmlDoc(parser.parseFromString(downloaded, "text/xml"));
-
-        async function blobToString(blob) {
-            const fileReader = new FileReader();
-            return new Promise((resolve, reject) => {
-                fileReader.onloadend = (ev) => {
-                    resolve(ev.target.result);
-                };
-                fileReader.onerror = reject;
-                fileReader.readAsText(blob);
-            });
-        }*/
         dispatch(getConfigAsync());
     }
 
@@ -203,6 +173,10 @@ const AddFurniture = () => {
 
     useEffect(() => {
         setContent([])
+        if(files.length === 1) {
+            alert("Please select both files!");
+            removeFile(0)
+        } else 
         for (let i = 0; i < files.length; i += 2) {
             setContent(<Grid templateColumns={{ base: "100%", md: "50% 50%" }} mb={4}>
                 <GridItem textAlign="center" width="100%" pb={20} pt={20} backgroundColor="whiteAlpha.600" borderRadius="5px" mr={2}>
@@ -211,8 +185,8 @@ const AddFurniture = () => {
                         <Text color="brown">FileName: {files[i].name}</Text>
                         <Text color="black">FileName: {files[i + 1].name}</Text>
                         <Button colorScheme="blackAlpha" onClick={() => {
-                            removeFile(0);
                             removeFile(1);
+                            removeFile(2);
                         }}
                         >Clear</Button>
                     </Box>
@@ -293,11 +267,11 @@ const AddFurniture = () => {
             <Container maxW="container.xl">
                 <Text fontSize="3rem" p={8} fontWeight="bold" color="#1C4532">Add furniture:</Text>
                 <Text fontSize="1.5rem" p={1} color="#1C4532">Add the Unity AssetBundle files: (.unity3d) and the (.unity3d.manifest) and then fill in the required information for each furniture piece:</Text>
-                {fileNames.length === 0 ?
+                {displayUploadProgress === 'none' ? <>{fileNames.length === 0 ?
                     <Grid templateColumns={{ base: "100%", md: "50% 50%" }}>
                         <GridItem textAlign="center" width="100%" pb={20} pt={20} backgroundColor="whiteAlpha.600" borderRadius="5px" mr={2}>
                             <Button colorScheme="blue" onClick={() => inputRef.current.click()}>Select files</Button>
-                            <input ref={inputRef} type="file" multiple style={{ display: 'none' }} onChange={(e) => addFile(e)}/>
+                            <input ref={inputRef} type="file" multiple style={{ display: 'none' }} onChange={(e) => addFile(e)} />
                         </GridItem>
 
                         <GridItem width="100%" backgroundColor="whitesmoke" borderRadius="5px" ml={2} position="relative" color="white">
@@ -308,9 +282,20 @@ const AddFurniture = () => {
                     </Grid> : <>
                         {content}
                     </>}
-                <Box textAlign="center" m="8">
-                    <Button onClick={handleSubmit} p="7" colorScheme="facebook" m={2}>Upload</Button>
-                </Box>
+                    <Box textAlign="center" m="8">
+                        <Button onClick={handleSubmit} p="7" colorScheme="facebook" m={2}>Upload</Button>
+                    </Box></> :
+                    <>
+                        {hasFinishedUploading === false || hasFinishedQueryingNoSQL === false ? <>
+                            <Text fontSize="3rem" p={4} fontWeight="bold" color="#1C4532">Uploading...</Text>
+                            <Text fontSize="1.5rem" p={4} color="#1C4532">Please do not close this window. A confimartion message will appear one the upload is finished.</Text>
+                        </> : <>
+                            <Text fontSize="3rem" p={4} fontWeight="bold" color="#1C4532">Done!</Text>
+                            <Text fontSize="1.5rem" p={4} color="#1C4532">You may close this window or navigate to another page.</Text>
+                        </>
+                        }
+                    </>}
+
             </Container>
         </>
     )

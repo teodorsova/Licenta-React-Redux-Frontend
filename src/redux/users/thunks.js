@@ -1,13 +1,25 @@
 import UsersService from "../../services/UsersService";
 import actions from "./actions";
 
+function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
 export const loginAsync = data => (dispatch) => {
     dispatch(actions.userLoginStart())
-
+    
     UsersService.loginUser(data)
         .then((response) => {
             dispatch(actions.userLoginSuccess());
-        }).catch((error) => dispatch(actions.userLoginError(error.message)))
+        }).catch(async function(error) {
+            dispatch(actions.userLoginError(error.message))
+            await sleep(2000);
+            dispatch(actions.userLoginStart())
+        })
+
+        
 
 };
 

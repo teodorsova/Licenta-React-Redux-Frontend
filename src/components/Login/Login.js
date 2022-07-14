@@ -46,6 +46,8 @@ const Login = () => {
   useEffect(() => {
     if(errorMessage !== undefined) {
       setDisplay("block")
+    } else {
+      setDisplay('none')
     }
   },[errorMessage])
 
